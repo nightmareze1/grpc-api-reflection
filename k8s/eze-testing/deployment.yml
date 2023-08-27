@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: enabled
+  name: eze-testing-dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eze-testing
+  namespace: eze-testing-dev
+  labels:
+    app: eze-testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eze-testing
+  template:
+    metadata:
+      labels:
+        app: eze-testing
+    spec:
+      containers:
+      - image: nightmareze1/pacman:grpc-api-reflection
+        imagePullPolicy: Always
+        name: eze-testing
+        ports:
+        - containerPort: 50051

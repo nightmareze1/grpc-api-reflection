@@ -1,0 +1,44 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  labels:
+    app: eze-testing
+  name: eze-testing-grpc
+  namespace: eze-testing-dev
+spec:
+  selector:
+    app: istio-ingressgateway-internal
+  servers:
+    - hosts:
+        - eze-testing-istio-grpc.foo.com
+      port:
+        name: eze-testing-istio-grpc
+        number: 31400 # Very important
+        protocol: grpc # Very important
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: eze-testing-virtual-service
+  namespace: eze-testing-dev
+spec:
+  gateways:
+    - eze-testing-grpc
+  hosts:
+    - eze-testing-istio-grpc.foo.com
+  http:
+    - fault:
+        delay:
+          fixedDelay: 1s
+          percent: 100
+      match:
+        - port: 31400 # Very important
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: eze-testing
+            port:
+              number: 50051
+      timeout: 60s
