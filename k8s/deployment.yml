@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-injection: enabled
+  name: dtp-pacman-argo-dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dtp-pacman-argo
+  namespace: dtp-pacman-argo-dev
+  labels:
+    app: dtp-pacman-argo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dtp-pacman-argo
+  template:
+    metadata:
+      labels:
+        app: dtp-pacman-argo
+    spec:
+      containers:
+      - image: nightmareze1/pacman:grpc-api-reflection
+        imagePullPolicy: Always
+        name: dtp-pacman-argo
+        ports:
+        - containerPort: 50051
